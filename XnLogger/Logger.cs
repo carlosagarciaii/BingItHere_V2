@@ -56,8 +56,10 @@ namespace XnLogger
 
             string LogMessage = $"{GetTimeStamp()}  |  {severityLevel.Name}  |  {functionName}  |  {message}";
             string targetFile = $"{GetWorkingDir()}/{LogConstants.LOGFILE_FOLDER_NAME}/{LogFileName}";
-            string logFileFolder = $"{ GetWorkingDir() }/{LogFileName}";
+            string logFileFolder = $"{ GetWorkingDir()}/{LogConstants.LOGFILE_FOLDER_NAME}";
 
+            string writeMessage = $"SANITY CHECK---------------\n\tLogMessage:\t{LogMessage}\n\ttargetFile:\t{targetFile}\n\tlogFileFolder:\t{logFileFolder}";
+            Console.Write(writeMessage);
 
             if (HighestLogLevel.Value >= severityLevel.Value)
             {
