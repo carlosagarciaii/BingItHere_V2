@@ -10,7 +10,7 @@ namespace BingItHere.Tests
 
     class FindElementTests
     {
-        public void Run(CoreTools coreTools)
+        public FindElementTests(CoreTools coreTools)
         {
 
             // Find Element Tests

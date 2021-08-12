@@ -797,7 +797,7 @@ namespace CoreToolSet
 		/// <returns></returns>
 		public string LocateByJS()
 		{
-			throw new Exception("Not Yet Implemented");
+//			throw new Exception("Not Yet Implemented");
 			string funcName = "LocateByJS";
 			string jsOutString = "";
 			switch (LocatorStrategy.ToLower())
@@ -827,7 +827,6 @@ namespace CoreToolSet
 					logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
 					throw new Exception(LogMsg);
 
-					break;
 			}
 
 			if (jsOutString == "")
@@ -842,13 +841,52 @@ namespace CoreToolSet
 
 
 
-		public void Table2Array()
+
+		//  ---------------------------------------------------------------
+		//  Table Interactions (FE)
+		//  ---------------------------------------------------------------
+		//  ---------------------------------------------------------------
+
+
+		public void Table2List(int headerRow = 1,bool textOnly = true)
 		{
-			string funcName = "Table2Array";
-			throw new Exception("Not Yet Implemented");
+			string funcName = "Table2List";
+			//			throw new Exception("Not Yet Implemented");
+
 
 			try
 			{
+				By tableRowsBy = By.XPath("//tr");
+				By tableHeadersBy = By.XPath("//th");
+				By tableCellsBy = By.XPath("//td");
+				List<IWebElement> tableRowsElements = new List<IWebElement>();
+				List<IWebElement> tableHeaderElements = new List<IWebElement>();
+				List<IWebElement> tableCellsElements = new List<IWebElement>();
+
+
+				// Get <TR> tags
+				tableRowsElements.Clear();
+				tableRowsElements.Add((IWebElement)Element.FindElements(tableRowsBy));
+
+				for (int rowNum = headerRow - 1; tableRowsElements.Count -1 > rowNum;rowNum++)
+				{
+					//Check for Header
+					tableHeaderElements.Clear();
+					tableHeaderElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableHeadersBy));
+					if (tableHeaderElements.Count > 0)
+					{
+						for (int cellNum = 0;cellNum < tableHeaderElements.Count - 1; cellNum++)
+						{
+							throw new Exception("Not Yet Implemented");
+						}
+					}
+
+
+				}
+
+
+
+
 				string tableHTML = GetAttribute("innerHTML");
 				logger.Write(tableHTML, funcName);
 
@@ -859,9 +897,6 @@ namespace CoreToolSet
 				logger.Write(LogMsg, funcName, LogConstants.LOG_WARNING);
 				throw new Exception(LogMsg);
 			}
-
-
-
 		}
 
 

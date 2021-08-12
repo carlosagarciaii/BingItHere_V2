@@ -18,16 +18,14 @@ namespace BingItHere
             CoreToolSet.CoreTools coreTools = new CoreToolSet.CoreTools("ff", XnLogger.LogConstants.LOG_DEBUG);
 
 
-            FormTest formTest = new FormTest();
-            formTest.Run(coreTools);
-
+            FormTest formTest = new FormTest(coreTools);
             Thread.Sleep(5000);
 
 
-            FindElementTests findElementTests = new FindElementTests();
-            findElementTests.Run(coreTools);
-
+            FindElementTests findElementTests = new FindElementTests(coreTools);
             Thread.Sleep(10000);
+
+
             coreTools.CloseBrowser();
 
 

@@ -10,7 +10,7 @@ namespace BingItHere.Tests
         class FormTest
         {
 
-            public void Run(CoreTools coreTools)
+            public FormTest(CoreTools coreTools)
             {
                 //Form Tests
                 coreTools.NavTo("https://www.seleniumeasy.com/test/basic-checkbox-demo.html");

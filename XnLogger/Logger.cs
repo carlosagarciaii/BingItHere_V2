@@ -11,7 +11,6 @@ namespace XnLogger
 {
     public class Logger
     {
-        private object p;
 
         private XnLogger.Model.LogLevel HighestLogLevel { get; set; }
         private string LogFileName { get; set; }
@@ -32,11 +31,6 @@ namespace XnLogger
 
         }
 
-        public Logger(object p, string logFileName)
-        {
-            this.p = p;
-            LogFileName = logFileName;
-        }
 
         /// <summary>
         /// Writes to the LogFile and Console.
