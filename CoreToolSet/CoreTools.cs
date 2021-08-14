@@ -9,6 +9,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using XnLogger;
+using CoreToolSet.Models;
 
 namespace CoreToolSet
 {
@@ -862,7 +863,7 @@ namespace CoreToolSet
 				List<IWebElement> tableRowsElements = new List<IWebElement>();
 				List<IWebElement> tableHeaderElements = new List<IWebElement>();
 				List<IWebElement> tableCellsElements = new List<IWebElement>();
-
+				List<TableListItem> tableContents = new List<TableListItem>();
 
 				// Get <TR> tags
 				tableRowsElements.Clear();
@@ -870,14 +871,20 @@ namespace CoreToolSet
 
 				for (int rowNum = headerRow - 1; tableRowsElements.Count -1 > rowNum;rowNum++)
 				{
+					tableContents.Add(new TableListItem(rowNum));
 					//Check for Header
 					tableHeaderElements.Clear();
 					tableHeaderElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableHeadersBy));
+
 					if (tableHeaderElements.Count > 0)
 					{
+
 						for (int cellNum = 0;cellNum < tableHeaderElements.Count - 1; cellNum++)
 						{
-							throw new Exception("Not Yet Implemented");
+							
+
+
+//							throw new Exception("Not Yet Implemented");
 						}
 					}
 
