@@ -862,10 +862,11 @@ namespace CoreToolSet
 				By tableRowsSelector = By.XPath("//tr");
 				By tableHeadersSelector = By.XPath("//th");
 				By tableCellsLocator = By.XPath("//td");
-				List<IWebElement> tableRowsElements = new List<IWebElement>();
-//				List<IWebElement> tableHeaderElements = new List<IWebElement>();
-				List<IWebElement> tableCellsElements = new List<IWebElement>();
-				List<TableListItem> tableContents = new List<TableListItem>();
+				List<IWebElement> tableRowsElements = new List<IWebElement>();		// The Rows for the Table
+//				List<IWebElement> tableHeaderElements = new List<IWebElement>();	// The Header Rowfor the table
+				List<IWebElement> tableCellsElements = new List<IWebElement>();		// The Cells for the current Row
+				List<TableListItem> tableContents = new List<TableListItem>();		// The table in List form with all Rows as a new list item 
+				List<string> tableCellsText = new List<string>();
 
 				// Get <TR> tags
 				tableRowsElements.Clear();
@@ -881,13 +882,14 @@ namespace CoreToolSet
 					if (tableCellsElements.Count > 0)
 					{
 						// Get Header Row Contents
-						for (int cellNum = 0;cellNum < tableCellsElements.Count - 1; cellNum++)
+//						for (int cellNum = 0;cellNum < tableCellsElements.Count - 1; cellNum++)
+						foreach (var curTableCell in tableCellsElements)
 						{
-							
+							tableCellsText.Add(curTableCell.Text);
 
-
-//							throw new Exception("Not Yet Implemented");
 						}
+						tableContents.Add(new TableListItem(tableCellsText));
+						
 					}
 
 
