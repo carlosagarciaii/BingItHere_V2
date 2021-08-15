@@ -857,29 +857,31 @@ namespace CoreToolSet
 
 			try
 			{
-				By tableRowsBy = By.XPath("//tr");
-				By tableHeadersBy = By.XPath("//th");
-				By tableCellsBy = By.XPath("//td");
+	
+				// Declare Variables
+				By tableRowsSelector = By.XPath("//tr");
+				By tableHeadersSelector = By.XPath("//th");
+				By tableCellsLocator = By.XPath("//td");
 				List<IWebElement> tableRowsElements = new List<IWebElement>();
-				List<IWebElement> tableHeaderElements = new List<IWebElement>();
+//				List<IWebElement> tableHeaderElements = new List<IWebElement>();
 				List<IWebElement> tableCellsElements = new List<IWebElement>();
 				List<TableListItem> tableContents = new List<TableListItem>();
 
 				// Get <TR> tags
 				tableRowsElements.Clear();
-				tableRowsElements.Add((IWebElement)Element.FindElements(tableRowsBy));
+				tableRowsElements.Add((IWebElement)Element.FindElements(tableRowsSelector));
 
 				for (int rowNum = headerRow - 1; tableRowsElements.Count -1 > rowNum;rowNum++)
 				{
-					tableContents.Add(new TableListItem(rowNum));
+
 					//Check for Header
-					tableHeaderElements.Clear();
-					tableHeaderElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableHeadersBy));
+					tableCellsElements.Clear();
+					tableCellsElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableHeadersSelector));
 
-					if (tableHeaderElements.Count > 0)
+					if (tableCellsElements.Count > 0)
 					{
-
-						for (int cellNum = 0;cellNum < tableHeaderElements.Count - 1; cellNum++)
+						// Get Header Row Contents
+						for (int cellNum = 0;cellNum < tableCellsElements.Count - 1; cellNum++)
 						{
 							
 
