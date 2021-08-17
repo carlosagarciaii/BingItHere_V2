@@ -852,7 +852,6 @@ namespace CoreToolSet
 		public void Table2List(int headerRow = 1,bool textOnly = true)
 		{
 			string funcName = "Table2List";
-			//			throw new Exception("Not Yet Implemented");
 
 
 			try
@@ -861,7 +860,7 @@ namespace CoreToolSet
 				// Declare Variables
 				By tableRowsSelector = By.XPath("//tr");
 				By tableHeadersSelector = By.XPath("//th");
-				By tableCellsLocator = By.XPath("//td");
+				By tableCellsSelector = By.XPath("//td");
 				List<IWebElement> tableRowsElements = new List<IWebElement>();		// The Rows for the Table
 //				List<IWebElement> tableHeaderElements = new List<IWebElement>();	// The Header Rowfor the table
 				List<IWebElement> tableCellsElements = new List<IWebElement>();		// The Cells for the current Row
@@ -876,6 +875,7 @@ namespace CoreToolSet
 				{
 
 					//Check for Header
+						//May be unnecessary.... 
 					tableCellsElements.Clear();
 					tableCellsElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableHeadersSelector));
 
@@ -886,25 +886,42 @@ namespace CoreToolSet
 						foreach (var curTableCell in tableCellsElements)
 						{
 							tableCellsText.Add(curTableCell.Text);
-
 						}
 						tableContents.Add(new TableListItem(tableCellsText));
 						
 					}
+					else
+                    {
+						// Check for TD Cells
+						tableCellsElements.Clear();
+						tableCellsElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableCellsSelector));
 
+						if (tableCellsElements.Count > 0)
+						{
+							foreach (var curTableCell in tableCellsElements)
+							{
+								tableCellsText.Add(curTableCell.Text);
+							}
+							tableContents.Add(new TableListItem(tableCellsText));
 
+						}
+                        else
+                        {
+							LogMsg = $"Could not locate a TD nor TH cell in current Row. ";
+							logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
+							throw new Exception(LogMsg);
+                        }
+					}
 				}
 
-
-
-
-				string tableHTML = GetAttribute("innerHTML");
-				logger.Write(tableHTML, funcName);
+// Old Notes?
+//				string tableHTML = GetAttribute("innerHTML");
+//				logger.Write(tableHTML, funcName);
 
 			}
 			catch (Exception e)
 			{
-				LogMsg = $"";
+				LogMsg = $"An Unhandled Exception occurred.";
 				logger.Write(LogMsg, funcName, LogConstants.LOG_WARNING);
 				throw new Exception(LogMsg);
 			}
