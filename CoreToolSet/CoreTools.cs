@@ -867,6 +867,8 @@ namespace CoreToolSet
 				List<TableListItem> tableContents = new List<TableListItem>();		// The table in List form with all Rows as a new list item 
 				List<string> tableCellsText = new List<string>();
 
+
+
 				// Get <TR> tags
 				tableRowsElements.Clear();
 				tableRowsElements.Add((IWebElement)Element.FindElements(tableRowsSelector));
@@ -921,7 +923,7 @@ namespace CoreToolSet
 			}
 			catch (Exception e)
 			{
-				LogMsg = $"An Unhandled Exception occurred.";
+				LogMsg = $"An Unhandled Exception occurred.\n{e}";
 				logger.Write(LogMsg, funcName, LogConstants.LOG_WARNING);
 				throw new Exception(LogMsg);
 			}

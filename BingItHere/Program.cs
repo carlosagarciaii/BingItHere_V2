@@ -19,13 +19,15 @@ namespace BingItHere
 
 
 
-
+/*
             FormTest formTest = new FormTest(coreTools);
             Thread.Sleep(5000);
 
 
             FindElementTests findElementTests = new FindElementTests(coreTools);
             Thread.Sleep(10000);
+*/
+
 
 
             coreTools.CloseBrowser();
