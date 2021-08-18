@@ -6,29 +6,29 @@ using XnLogger;
 
 namespace CoreToolSet.Models
 {
-    public class TableOutputItem
+    public class TableModel
     {
-        private string ClassName = "TableOutputItem";
-        public List<TableRowItem> TableData = new List<TableRowItem>();
+        private string ClassName = "TableModel";
+        public List<TableRowModel> TableData = new List<TableRowModel>();
 
         private XnLogger.Logger logger = new Logger();
         private string LogMsg;
 
 
 
-        public TableOutputItem()
+        public TableModel()
         {
-            string funcName = $"{ClassName}.TableOutputItem";
+            string funcName = $"{ClassName}.TableModel";
             LogMsg = $"{funcName} instantiated.";
-            logger.Write(LogMsg,funcName,LogConstants.LOG_INFO);
+            logger.Write(LogMsg,funcName,LogConstants.LOG_DEBUG);
         }
-        public TableOutputItem(List<TableRowItem> tableData)
+        public TableModel(List<TableRowModel> tableData)
         {
-            string funcName = $"{ClassName}.TableOutputItem";
+            string funcName = $"{ClassName}.TableModel";
             try
             {
                 LogMsg = $"{funcName} instantiated.";
-                logger.Write(LogMsg, funcName, LogConstants.LOG_INFO);
+                logger.Write(LogMsg, funcName, LogConstants.LOG_DEBUG);
                 TableData = tableData;
             }
             catch (Exception e)
@@ -40,13 +40,13 @@ namespace CoreToolSet.Models
 
         }
 
-        public void AddRow(TableRowItem TableRowItem)
+        public void AddRow(TableRowModel tableRowModel)
         {
             string funcName = $"{ClassName}.AddRow";
 
             try
             {
-                TableData.Add(TableRowItem);
+                TableData.Add(tableRowModel);
             }
             catch (Exception e)
             {

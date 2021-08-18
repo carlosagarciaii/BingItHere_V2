@@ -864,9 +864,8 @@ namespace CoreToolSet
 				List<IWebElement> tableRowsElements = new List<IWebElement>();		// The Rows for the Table
 //				List<IWebElement> tableHeaderElements = new List<IWebElement>();	// The Header Rowfor the table
 				List<IWebElement> tableCellsElements = new List<IWebElement>();		// The Cells for the current Row
-				List<TableRowItem> tableContents = new List<TableRowItem>();		// The table in List form with all Rows as a new list item 
-				List<string> tableCellsText = new List<string>();
-
+				TableRowModel tableRowContents = new TableRowModel();		// The table in List form with all Rows as a new list item 
+				TableModel table2Output = new TableModel();
 
 
 				// Get <TR> tags
@@ -887,13 +886,13 @@ namespace CoreToolSet
 //						for (int cellNum = 0;cellNum < tableCellsElements.Count - 1; cellNum++)
 						foreach (var curTableCell in tableCellsElements)
 						{
-							tableCellsText.Add(curTableCell.Text);
+							tableRowCells.Add(curTableCell.Text);
 						}
-						tableContents.Add(new TableRowItem(tableCellsText));
+						tableRowContents.Add(new TableRowModel(tableRowCells));
 						
 					}
 					else
-                    {
+					{
 						// Check for TD Cells
 						tableCellsElements.Clear();
 						tableCellsElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableCellsSelector));
@@ -902,17 +901,17 @@ namespace CoreToolSet
 						{
 							foreach (var curTableCell in tableCellsElements)
 							{
-								tableCellsText.Add(curTableCell.Text);
+								tableRowCells.Add(curTableCell.Text);
 							}
-							tableContents.Add(new TableRowItem(tableCellsText));
+							tableRowContents.Add(new TableRowModel(tableRowCells));
 
 						}
-                        else
-                        {
+						else
+						{
 							LogMsg = $"Could not locate a TD nor TH cell in current Row. ";
 							logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
 							throw new Exception(LogMsg);
-                        }
+						}
 					}
 				}
 
