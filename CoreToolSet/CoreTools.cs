@@ -864,7 +864,7 @@ namespace CoreToolSet
 				List<IWebElement> tableRowsElements = new List<IWebElement>();		// The Rows for the Table
 //				List<IWebElement> tableHeaderElements = new List<IWebElement>();	// The Header Rowfor the table
 				List<IWebElement> tableCellsElements = new List<IWebElement>();		// The Cells for the current Row
-				List<TableListItem> tableContents = new List<TableListItem>();		// The table in List form with all Rows as a new list item 
+				List<TableRowItem> tableContents = new List<TableRowItem>();		// The table in List form with all Rows as a new list item 
 				List<string> tableCellsText = new List<string>();
 
 
@@ -889,7 +889,7 @@ namespace CoreToolSet
 						{
 							tableCellsText.Add(curTableCell.Text);
 						}
-						tableContents.Add(new TableListItem(tableCellsText));
+						tableContents.Add(new TableRowItem(tableCellsText));
 						
 					}
 					else
@@ -904,7 +904,7 @@ namespace CoreToolSet
 							{
 								tableCellsText.Add(curTableCell.Text);
 							}
-							tableContents.Add(new TableListItem(tableCellsText));
+							tableContents.Add(new TableRowItem(tableCellsText));
 
 						}
                         else

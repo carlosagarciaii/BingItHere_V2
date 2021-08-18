@@ -8,20 +8,57 @@ namespace CoreToolSet.Models
 {
     public class TableOutputItem
     {
-        public List<TableListItem> TableData = new List<TableListItem>();
+        private string ClassName = "TableOutputItem";
+        public List<TableRowItem> TableData = new List<TableRowItem>();
 
         private XnLogger.Logger logger = new Logger();
         private string LogMsg;
-        public TableOutputItem(List<TableListItem> tableData)
+
+
+
+        public TableOutputItem()
         {
-            TableData = tableData;
+            string funcName = $"{ClassName}.TableOutputItem";
+            LogMsg = $"{funcName} instantiated.";
+            logger.Write(LogMsg,funcName,LogConstants.LOG_INFO);
+        }
+        public TableOutputItem(List<TableRowItem> tableData)
+        {
+            string funcName = $"{ClassName}.TableOutputItem";
+            try
+            {
+                LogMsg = $"{funcName} instantiated.";
+                logger.Write(LogMsg, funcName, LogConstants.LOG_INFO);
+                TableData = tableData;
+            }
+            catch (Exception e)
+            {
+                LogMsg = $"{funcName} could not be instantiated.\n{e}";
+                logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
+                throw new Exception(LogMsg);
+            }
 
         }
 
+        public void AddRow(TableRowItem TableRowItem)
+        {
+            string funcName = $"{ClassName}.AddRow";
+
+            try
+            {
+                TableData.Add(TableRowItem);
+            }
+            catch (Exception e)
+            {
+                LogMsg = $"An error has occurred while attempting to add a record.\n{e}";
+                logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
+                throw new Exception(LogMsg);
+            }
+        }
 
         public string GetTable()
         {
-            string funcName = "GetTable";
+            string funcName = $"{ClassName}.GetTable";
             string lineText = "";
             string outString = "";
 
