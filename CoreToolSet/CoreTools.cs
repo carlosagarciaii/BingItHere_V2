@@ -862,15 +862,19 @@ namespace CoreToolSet
 				By tableHeadersSelector = By.XPath("//th");
 				By tableCellsSelector = By.XPath("//td");
 				List<IWebElement> tableRowsElements = new List<IWebElement>();		// The Rows for the Table
-//				List<IWebElement> tableHeaderElements = new List<IWebElement>();	// The Header Rowfor the table
+//				List<IWebElement> tableHeaderElements = new List<IWebElement>();	// The Header Rowfor the table (May not be needed)
 				List<IWebElement> tableCellsElements = new List<IWebElement>();		// The Cells for the current Row
-				TableRowModel tableRowContents = new TableRowModel();		// The table in List form with all Rows as a new list item 
+				TableRowModel tableRowContents = new TableRowModel();				// The text contents of the table row
 				TableModel table2Output = new TableModel();
 
 
 				// Get <TR> tags
 				tableRowsElements.Clear();
-				tableRowsElements.Add((IWebElement)Element.FindElements(tableRowsSelector));
+				foreach (var iElement in Element.FindElements(tableRowsSelector))
+                {
+					tableRowsElements.Add(iElement);
+                }
+
 
 				for (int rowNum = headerRow - 1; tableRowsElements.Count -1 > rowNum;rowNum++)
 				{
@@ -878,7 +882,14 @@ namespace CoreToolSet
 					//Check for Header
 						//May be unnecessary.... 
 					tableCellsElements.Clear();
-					tableCellsElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableHeadersSelector));
+					foreach (var iCellElement in tableRowsElements[rowNum].FindElements(tableHeadersSelector))
+                    {
+						tableCellsElements.Add(iCellElement);
+                    }
+					foreach (var iCellElement in tableRowsElements[rowNum].FindElements(tableHeadersSelector))
+                    {
+						tableCellsElements.Add(iCellElement);
+                    }
 
 					if (tableCellsElements.Count > 0)
 					{
@@ -886,24 +897,28 @@ namespace CoreToolSet
 //						for (int cellNum = 0;cellNum < tableCellsElements.Count - 1; cellNum++)
 						foreach (var curTableCell in tableCellsElements)
 						{
-							tableRowCells.Add(curTableCell.Text);
+							tableRowContents.AddItem(curTableCell.Text);
 						}
-						tableRowContents.Add(new TableRowModel(tableRowCells));
+						table2Output.AddRow(tableRowContents);
 						
 					}
 					else
 					{
 						// Check for TD Cells
 						tableCellsElements.Clear();
-						tableCellsElements.Add((IWebElement)tableRowsElements[rowNum].FindElements(tableCellsSelector));
+						foreach (var iCellElement in tableRowsElements[rowNum].FindElements(tableCellsSelector))
+                        {
+							tableCellsElements.Add(iCellElement);
+                        }
+
 
 						if (tableCellsElements.Count > 0)
 						{
 							foreach (var curTableCell in tableCellsElements)
 							{
-								tableRowCells.Add(curTableCell.Text);
+								tableRowContents.AddItem(curTableCell.Text);
 							}
-							tableRowContents.Add(new TableRowModel(tableRowCells));
+							table2Output.AddRow(tableRowContents);
 
 						}
 						else
@@ -914,7 +929,7 @@ namespace CoreToolSet
 						}
 					}
 				}
-
+				table2Output.GetTable();
 // Old Notes?
 //				string tableHTML = GetAttribute("innerHTML");
 //				logger.Write(tableHTML, funcName);

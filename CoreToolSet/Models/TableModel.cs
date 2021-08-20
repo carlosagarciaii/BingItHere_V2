@@ -40,13 +40,17 @@ namespace CoreToolSet.Models
 
         }
 
-        public void AddRow(TableRowModel tableRowModel)
+        public void AddRow(TableRowModel tableRowModel,bool isDebug = true)
         {
             string funcName = $"{ClassName}.AddRow";
 
             try
             {
                 TableData.Add(tableRowModel);
+                if (isDebug) {
+                    LogMsg = $"Row Added";
+                    logger.Write(LogMsg, funcName, LogConstants.LOG_DEBUG);
+                }
             }
             catch (Exception e)
             {

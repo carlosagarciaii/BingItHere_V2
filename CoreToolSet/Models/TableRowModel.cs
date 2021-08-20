@@ -83,12 +83,17 @@ namespace CoreToolSet.Models
         /// Adds a single item to the RowData
         /// </summary>
         /// <param name="item2Add"></param>
-        public void AddItem(string item2Add)
+        public void AddItem(string item2Add,bool isDebug = true)
         {
             string funcName = $"{ClassName}.AddItem";
             try
             {
                 RowData.Add(item2Add);
+                if (isDebug)
+                {
+                    LogMsg = $"Added Item {item2Add}";
+                    logger.Write(LogMsg, funcName, LogConstants.LOG_DEBUG);
+                }
             }
             catch (Exception e)
             {
@@ -104,7 +109,7 @@ namespace CoreToolSet.Models
         /// Appends a List to the RowData
         /// </summary>
         /// <param name="items2Add"></param>
-        public void AddItem(List<string> items2Add)
+        public void AddItem(List<string> items2Add,bool isDebug = true)
         {
             string funcName = $"{ClassName}.AddItem (List)";
             try
@@ -112,6 +117,12 @@ namespace CoreToolSet.Models
                 foreach (string curItem in items2Add)
                 {
                     RowData.Add(curItem);
+
+                    if (isDebug)
+                    {
+                        LogMsg = $"Added Item {curItem}";
+                        logger.Write(LogMsg, funcName, LogConstants.LOG_DEBUG);
+                    }
                 }
             }
             catch (Exception e)
