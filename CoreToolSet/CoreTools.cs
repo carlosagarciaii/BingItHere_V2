@@ -871,9 +871,9 @@ namespace CoreToolSet
 				// Get <TR> tags
 				tableRowsElements.Clear();
 				foreach (var iElement in Element.FindElements(tableRowsSelector))
-                {
+				{
 					tableRowsElements.Add(iElement);
-                }
+				}
 
 
 				for (int rowNum = headerRow - 1; tableRowsElements.Count -1 > rowNum;rowNum++)
@@ -883,13 +883,13 @@ namespace CoreToolSet
 						//May be unnecessary.... 
 					tableCellsElements.Clear();
 					foreach (var iCellElement in tableRowsElements[rowNum].FindElements(tableHeadersSelector))
-                    {
+					{
 						tableCellsElements.Add(iCellElement);
-                    }
+					}
 					foreach (var iCellElement in tableRowsElements[rowNum].FindElements(tableHeadersSelector))
-                    {
+					{
 						tableCellsElements.Add(iCellElement);
-                    }
+					}
 
 					if (tableCellsElements.Count > 0)
 					{
@@ -907,9 +907,9 @@ namespace CoreToolSet
 						// Check for TD Cells
 						tableCellsElements.Clear();
 						foreach (var iCellElement in tableRowsElements[rowNum].FindElements(tableCellsSelector))
-                        {
+						{
 							tableCellsElements.Add(iCellElement);
-                        }
+						}
 
 
 						if (tableCellsElements.Count > 0)

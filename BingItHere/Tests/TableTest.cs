@@ -12,7 +12,7 @@ namespace BingItHere.Tests
         public TableTest(CoreTools coreTools)
         {
             // Table Tests
-            coreTools.NavTo("https://en.wikipedia.org/wiki/List_of_Nintendo_Entertainment_System_games");
+            coreTools.NavTo("https://en.wikipedia.org/wiki/List_of_Virtual_Boy_games");
             coreTools.FindElement("//table[@id='softwarelist']", "xpath");
             coreTools.Table2List();
 
