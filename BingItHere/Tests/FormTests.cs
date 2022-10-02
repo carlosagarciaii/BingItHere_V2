@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using CoreToolSet;
+using CoreToolSet.Controllers;
 
 
 namespace BingItHere.Tests
@@ -10,7 +11,7 @@ namespace BingItHere.Tests
         class FormTest
         {
 
-            public FormTest(CoreTools coreTools)
+            public FormTest(BrowserController coreTools)
             {
                 //Form Tests
                 coreTools.NavTo("https://www.seleniumeasy.com/test/basic-checkbox-demo.html");

@@ -108,7 +108,6 @@ namespace XnLogger
             }
             if (severityLevel == LogConstants.LOG_CRITICAL)
             {
-
                 throw new Exception(LogConstants.LOG_CRITICAL.Name + LogMessage);
             }
 

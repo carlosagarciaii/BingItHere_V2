@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoreToolSet
+namespace CoreToolSet.Globals
 {
     public class CTConstants
     {

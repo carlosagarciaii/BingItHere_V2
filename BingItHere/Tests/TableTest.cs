@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CoreToolSet;
+using CoreToolSet.Controllers;
 
 
 namespace BingItHere.Tests
@@ -9,7 +10,7 @@ namespace BingItHere.Tests
     class TableTest
     {
 
-        public TableTest(CoreTools coreTools)
+        public TableTest(BrowserController coreTools)
         {
             // Table Tests
             coreTools.NavTo("https://en.wikipedia.org/wiki/List_of_Virtual_Boy_games");

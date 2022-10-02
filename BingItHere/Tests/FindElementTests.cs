@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CoreToolSet;
+using CoreToolSet.Controllers;
 
 
 
@@ -10,7 +11,7 @@ namespace BingItHere.Tests
 
     class FindElementTests
     {
-        public FindElementTests(CoreTools coreTools)
+        public FindElementTests(BrowserController coreTools)
         {
 
             // Find Element Tests

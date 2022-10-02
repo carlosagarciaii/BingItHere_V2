@@ -10,10 +10,13 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using XnLogger;
 using CoreToolSet.Models;
+using CoreToolSet.Globals;
+using System.Reflection;
+using Newtonsoft.Json;
 
-namespace CoreToolSet
+namespace CoreToolSet.Controllers
 {
-	public class CoreTools
+	public class BrowserController
 	{
 
 		//  ---------------------------------------------------------------
@@ -25,15 +28,15 @@ namespace CoreToolSet
 		private Logger logger = new Logger(LogConstants.LOG_INFO);
 
 		string LogMsg;
-		private IWebDriver Driver { get; set; }
-		private string BrowserName { get; set; }
-		private string DriverFileName { get; set; }
-		private string DriverFilePath { get; set; }
-		private string ElementSelector { get; set; }
-		private string LocatorStrategy { get; set; }
-		private By ElementLocator { get; set; }
-		public IWebElement Element { get; set; }
-		public List<IWebElement> ElementList { get; set; }
+		private IWebDriver driver { get; set; }
+		private string browserName { get; set; }
+		private string driverFileName { get; set; }
+		private string driverFilePath { get; set; }
+		private string elementSelector { get; set; }
+		private string locatorStrategy { get; set; }
+		private By elementLocator { get; set; }
+		public IWebElement element { get; set; }
+		public List<IWebElement> elementList { get; set; }
 
 
 
@@ -62,11 +65,12 @@ namespace CoreToolSet
 			}
 		}
 
-
 		//  ---------------------------------------------------------------
 		//  CREATING A SESSION
 		//  ---------------------------------------------------------------
 		//  ---------------------------------------------------------------
+
+		#region Creating A Session
 
 		/// <summary>
 		/// <para>Returns a String for the filename of the WebDriver</para>
@@ -81,23 +85,23 @@ namespace CoreToolSet
 		{
 			string funcName = "SetDriverFileName";
 
-			switch (BrowserName.ToLower())
+			switch (browserName.ToLower())
 			{
 				case "ff":
 				case "firefox":
-					DriverFileName = CTConstants.FIREFOX_DRIVER_NAME;
+					driverFileName = CTConstants.FIREFOX_DRIVER_NAME;
 					break;
 				case "chrome":
 				case "google":
-					DriverFileName = CTConstants.CHROME_DRIVER_NAME;
+					driverFileName = CTConstants.CHROME_DRIVER_NAME;
 					break;
 				case "ie":
 				case "iexplore":
-					DriverFileName = CTConstants.IE_DRIVER_NAME;
+					driverFileName = CTConstants.IE_DRIVER_NAME;
 					break;
 				case "edge":
 				case "msedge":
-					DriverFileName = CTConstants.MSEDGE_DRIVER_NAME;
+					driverFileName = CTConstants.MSEDGE_DRIVER_NAME;
 					break;
 				default:
 					string LogMsg = "The Browser Provided does not match an acceptable value.";
@@ -127,15 +131,15 @@ namespace CoreToolSet
 				if (Directory.Exists(driverDirPathItem))
 				{
 					isFoundDriverDirPath = true;
-					logger.Write($"Driver Path Found:\t{DriverFilePath}", funcName, LogConstants.LOG_INFO);
-					fullDriverFilePath = driverDirPathItem + "/" + DriverFileName;
+					logger.Write($"Driver Path Found:\t{driverFilePath}", funcName, LogConstants.LOG_INFO);
+					fullDriverFilePath = driverDirPathItem + "/" + driverFileName;
 
 					RenameEdgeDriver(driverDirPathItem);
 
 					if (File.Exists(fullDriverFilePath))
 					{
 						logger.Write($"Driver File Found:\t{fullDriverFilePath}", funcName, LogConstants.LOG_INFO);
-						DriverFilePath = driverDirPathItem + "/";
+						driverFilePath = driverDirPathItem + "/";
 						return;
 					}
 				}
@@ -193,25 +197,25 @@ namespace CoreToolSet
 			string funcName = "CreateSession";
 			try
 			{
-				switch (BrowserName.ToLower())
+				switch (browserName.ToLower())
 				{
 					case "ff":
-						return new FirefoxDriver(DriverFilePath);
+						return new FirefoxDriver(driverFilePath);
 
 					case "firefox":
-						return new FirefoxDriver(DriverFilePath);
+						return new FirefoxDriver(driverFilePath);
 					case "chrome":
-						return new ChromeDriver(DriverFilePath);
+						return new ChromeDriver(driverFilePath);
 					case "google":
-						return new ChromeDriver(DriverFilePath);
+						return new ChromeDriver(driverFilePath);
 					case "ie":
-						return new InternetExplorerDriver(DriverFilePath);
+						return new InternetExplorerDriver(driverFilePath);
 					case "iexplore":
-						return new InternetExplorerDriver(DriverFilePath);
+						return new InternetExplorerDriver(driverFilePath);
 					case "edge":
-						return new EdgeDriver(DriverFilePath);
+						return new EdgeDriver(driverFilePath);
 					case "msedge":
-						return new EdgeDriver(DriverFilePath);
+						return new EdgeDriver(driverFilePath);
 					default:
 						string LogMsg = "Unable to Locate WebDriver";
 						logger.Write(LogMsg, funcName);
@@ -243,13 +247,13 @@ namespace CoreToolSet
 		/// <param name="browserName"></param>
 		/// <param name="setLogLevel"></param>
 		/// <param name="logFileName"></param>
-		public CoreTools(string browserName, XnLogger.Model.LogLevel setLogLevel , string logFileName = LogConstants.LOGFILE_NAME)
+		public BrowserController(string browserName, XnLogger.Model.LogLevel setLogLevel , string logFileName = LogConstants.LOGFILE_NAME)
 		{
 			string funcName = "CoreTools";
 			logger = new Logger( setLogLevel, logFileName);
 
 			logger.Write("Opening Browser", funcName, LogConstants.LOG_INFO);
-			BrowserName = browserName;
+			this.browserName = browserName;
 
 			try
 			{
@@ -257,8 +261,8 @@ namespace CoreToolSet
 
 				SetDriverFilePath();
 
-				Driver = CreateSession();
-				Driver.Manage().Window.Maximize();
+				driver = CreateSession();
+				driver.Manage().Window.Maximize();
 			}
 			catch (Exception e)
 			{
@@ -282,13 +286,13 @@ namespace CoreToolSet
 		/// <param name="browserName"></param>
 		/// <param name="logFileName"></param>
 
-		public CoreTools(string browserName, string logFileName = LogConstants.LOGFILE_NAME)
+		public BrowserController(string browserName, string logFileName = LogConstants.LOGFILE_NAME)
 		{
 			string funcName = "CoreTools";
 			logger = new Logger(LogConstants.LOG_INFO, logFileName);
 
 			logger.Write("Opening Browser", funcName, LogConstants.LOG_INFO);
-			BrowserName = browserName;
+			this.browserName = browserName;
 
 			try
 			{
@@ -296,9 +300,9 @@ namespace CoreToolSet
 
 				SetDriverFilePath();
 
-				Driver = CreateSession();
+				driver = CreateSession();
 
-				Driver.Manage().Window.Maximize();
+				driver.Manage().Window.Maximize();
 			}
 			catch (Exception e)
 			{
@@ -319,13 +323,13 @@ namespace CoreToolSet
 		/// </para>
 		/// </summary>
 		/// <param name="browserName"></param>
-		public CoreTools(string browserName)
+		public BrowserController(string browserName)
 		{
 			string funcName = "OpenBrowser";
 			logger = new Logger(LogConstants.LOG_INFO);
 
 			logger.Write("Opening Browser", funcName, LogConstants.LOG_INFO);
-			BrowserName = browserName;
+			this.browserName = browserName;
 
 			try
 			{
@@ -333,9 +337,9 @@ namespace CoreToolSet
 
 				SetDriverFilePath();
 
-				Driver = CreateSession();
+				driver = CreateSession();
 
-				Driver.Manage().Window.Maximize();
+				driver.Manage().Window.Maximize();
 			}
 			catch (Exception e)
 			{
@@ -346,26 +350,26 @@ namespace CoreToolSet
 
 		}
 
+        #endregion
 
 
+        //  ---------------------------------------------------------------
+        //  CLOSING A SESSION
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
 
-		//  ---------------------------------------------------------------
-		//  CLOSING A SESSION
-		//  ---------------------------------------------------------------
-		//  ---------------------------------------------------------------
-
-
-		/// <summary>
-		/// Closes the Browser.
-		/// </summary>
-		public void CloseBrowser()
+        #region Closing a Session
+        /// <summary>
+        /// Closes the Browser.
+        /// </summary>
+        public void CloseBrowser()
 		{
 			string funcName = "CloseBrowser";
 
 			logger.Write("Closing Browser Session", funcName, LogConstants.LOG_INFO);
 			try
 			{
-				Driver.Close();
+				driver.Close();
 			}
 			catch (Exception e)
 			{
@@ -377,36 +381,39 @@ namespace CoreToolSet
 
 		}
 
-		//  ---------------------------------------------------------------
-		//  Navigating To pages
-		//  ---------------------------------------------------------------
-		//  ---------------------------------------------------------------
+        #endregion
 
+        //  ---------------------------------------------------------------
+        //  Navigating To pages
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
 
-		/// <summary>
-		/// Navigates to the specified URL
-		/// <para><br>goToURL = The URL to navigate to.</br>
-		/// <br>retryNumber = Number of Times to Retry loading the page (Default 0)</br>
-		/// <br>waitInSec = The number of seconds to wait before reloading the page.(Default 20) </br></para>
-		/// </summary>
-		/// <param name="goToURL"></param>
-		/// <param name="retryNumbers"></param>
-		/// <param name="waitInSec"></param>
-		public void NavTo(string goToURL, int retryNumbers = 0, int waitInSec = 20, bool hasHumanWait = true)
+        #region Navigating Pages
+
+        /// <summary>
+        /// Navigates to the specified URL
+        /// <para><br>goToURL = The URL to navigate to.</br>
+        /// <br>retryNumber = Number of Times to Retry loading the page (Default 0)</br>
+        /// <br>waitInSec = The number of seconds to wait before reloading the page.(Default 20) </br></para>
+        /// </summary>
+        /// <param name="goToURL"></param>
+        /// <param name="retryNumbers"></param>
+        /// <param name="waitInSec"></param>
+        public void NavTo(string goToURL, int retryNumbers = 0, int waitInSec = 20, bool hasHumanWait = true)
 		{
 			string funcName = "NavTo";
 			string ReadyState = "";
-			Driver.Url = goToURL;
+			driver.Url = goToURL;
 			for (int retryCount = retryNumbers + 1; retryCount >= 0; retryCount--)
 			{
-				Driver.Navigate();
+				driver.Navigate();
 
 				for (int i = 0; i < waitInSec; i++)
 				{
 					try
 					{
 						Thread.Sleep(1000);
-						ReadyState = (string)((IJavaScriptExecutor)Driver).ExecuteScript("return document.readyState;");
+						ReadyState = (string)((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState;");
 						logger.Write($"Ready State:\t{ReadyState}", funcName, LogConstants.LOG_DEBUG);
 						if (ReadyState.ToLower() == "complete") break;
 					}
@@ -422,67 +429,68 @@ namespace CoreToolSet
 			}
 
 			if (ReadyState.ToLower() != "complete") throw new Exception($"\nEXCEPTION:\n\tFailed to Load Page {goToURL}");
-			logger.Write($"Success - Navigated to:\t{Driver.Url.ToString()}", funcName, LogConstants.LOG_INFO);
+			logger.Write($"Success - Navigated to:\t{driver.Url.ToString()}", funcName, LogConstants.LOG_INFO);
 
 			if (hasHumanWait) { SimulateHumanWait(6, 10); }
 		}
 
+        #endregion
 
-		//  ---------------------------------------------------------------
-		//  Find Elements (FE)
-		//  ---------------------------------------------------------------
-		//  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
+        //  Find Elements (FE)
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
 
+        #region Find Elements
 
+        /// <summary>
+        /// Sets the Locator and strategy to use.
+        /// <para><br>-- elementSelector = The selector for the element (IE: #id, "//a", etc)</br>
+        /// <br>-- locatorStrategy = The Strategy to use to locate the element </br>
+        /// <br>-- -- -- xpath (default)</br>
+        /// <br>-- -- -- css / cssselector</br>
+        /// <br>-- -- -- name</br>
+        /// <br>-- -- -- id</br>
+        /// </para>
+        /// </summary>
+        /// <param name="elementSelector"></param>
+        /// <param name="locatorStrategy"></param>
 
-		/// <summary>
-		/// Sets the Locator and strategy to use.
-		/// <para><br>-- elementSelector = The selector for the element (IE: #id, "//a", etc)</br>
-		/// <br>-- locatorStrategy = The Strategy to use to locate the element </br>
-		/// <br>-- -- -- xpath (default)</br>
-		/// <br>-- -- -- css / cssselector</br>
-		/// <br>-- -- -- name</br>
-		/// <br>-- -- -- id</br>
-		/// </para>
-		/// </summary>
-		/// <param name="elementSelector"></param>
-		/// <param name="locatorStrategy"></param>
-
-		public void SetLocator(string elementSelector, string locatorStrategy = "xpath")
+        public void SetLocator(string elementSelector, string locatorStrategy = "xpath")
 		{
 			string funcName = "SetLocator";
-			ElementSelector = elementSelector;
-			LocatorStrategy = locatorStrategy;
-			switch (LocatorStrategy.ToLower())
+			this.elementSelector = elementSelector;
+			this.locatorStrategy = locatorStrategy;
+			switch (this.locatorStrategy.ToLower())
 			{
 				case "xpath":
-					LogMsg = $"Locator Strategy:\tXPATH\tElement:\t{elementSelector}";
-					ElementLocator = By.XPath(elementSelector);
+                    LogMsg = $"Locator Strategy:\tXPATH\tElement:\t{elementSelector}";
+                    elementLocator = By.XPath(elementSelector);
 					break;
 				case "css":
 				case "cssselector":
-					LogMsg = $"Locator Strategy:\tCssSelector\tElement:\t{elementSelector}";
-					ElementLocator = By.CssSelector(elementSelector);
+                    LogMsg = $"Locator Strategy:\tCssSelector\tElement:\t{elementSelector}";
+                    elementLocator = By.CssSelector(elementSelector);
 					break;
 				case "id":
-					LogMsg = $"Locator Strategy:\tID\tElement:\t{elementSelector}";
-					ElementLocator = By.Id(elementSelector);
+                    LogMsg = $"Locator Strategy:\tID\tElement:\t{elementSelector}";
+                    elementLocator = By.Id(elementSelector);
 					break;
 				case "name":
-					LogMsg = $"Locator Strategy:\tName\tElement:\t{elementSelector}";
-					ElementLocator = By.Name(elementSelector);
+                    LogMsg = $"Locator Strategy:\tName\tElement:\t{elementSelector}";
+                    elementLocator = By.Name(elementSelector);
 					break;
 				case "tagname":
-					LogMsg = $"Locator Strategy:\tTagName\tElement:\t{elementSelector}";
-					ElementLocator = By.TagName(elementSelector);
+                    LogMsg = $"Locator Strategy:\tTagName\tElement:\t{elementSelector}";
+                    elementLocator = By.TagName(elementSelector);
 					break;
 				case "classname":
-					LogMsg = $"Locator Strategy:\tClassName\tElement:\t{elementSelector}";
-					ElementLocator = By.ClassName(elementSelector);
+                    LogMsg = $"Locator Strategy:\tClassName\tElement:\t{elementSelector}";
+                    elementLocator = By.ClassName(elementSelector);
 					break;
 				default:
-					LogMsg = $"EXCEPTION\tLOCATOR ERROR\nError:\tFE00001\n\tThe Locator Stragety Provided does not match a recognized strategy.\n\tLocator Strategy Provided:\t{locatorStrategy}\n\tLocator:\t{elementSelector}";
-					logger.Write(LogMsg, funcName, LogConstants.LOG_CRITICAL);
+                    LogMsg = $"EXCEPTION\tLOCATOR ERROR\nError:\tFE00001\n\tThe Locator Stragety Provided does not match a recognized strategy.\n\tLocator Strategy Provided:\t{locatorStrategy}\n\tLocator:\t{elementSelector}";
+                    logger.Write(LogMsg, funcName, LogConstants.LOG_CRITICAL);
 					throw new Exception(LogMsg);
 
 			}
@@ -512,7 +520,7 @@ namespace CoreToolSet
 		public void FindElement(string elementSelector, string locatorStrategy = "xpath", bool isRequired = true, bool waitForElement = true, int waitTimeSec = 20)
 		{
 			string funcName = "FindElement";
-			Element = null;
+			element = null;
 
 			SetLocator(elementSelector, locatorStrategy);
 			logger.Write($"Finding Element [{elementSelector}]", funcName, LogConstants.LOG_DEBUG);
@@ -523,7 +531,7 @@ namespace CoreToolSet
 				Thread.Sleep(1000);
 				try
 				{
-					Element = Driver.FindElement(ElementLocator);
+					element = driver.FindElement(elementLocator);
 					break;
 				}
 				catch
@@ -535,9 +543,9 @@ namespace CoreToolSet
 				}
 			}
 
-			if (Element == null)
+			if (element == null)
 			{
-				LogMsg = $"Unable to Locate Element:\t{ElementSelector} using strategy {locatorStrategy}.";
+                LogMsg = $"Unable to Locate Element:\t{this.elementSelector} using strategy {locatorStrategy}.";
 				if (isRequired)
 				{
 					logger.Write(LogMsg, funcName, LogConstants.LOG_CRITICAL);
@@ -577,7 +585,7 @@ namespace CoreToolSet
 		{
 
 			string funcName = "FindElements";
-			ElementList = new List<IWebElement>();
+			elementList = new List<IWebElement>();
 
 
 			SetLocator(elementSelector, locatorStrategy);
@@ -588,7 +596,7 @@ namespace CoreToolSet
 				Thread.Sleep(1000);
 				try
 				{
-					ElementList = new List<IWebElement>(Driver.FindElements(ElementLocator));
+					elementList = new List<IWebElement>(driver.FindElements(elementLocator));
 
 					break;
 				}
@@ -600,7 +608,7 @@ namespace CoreToolSet
 				}
 			}
 
-			if (ElementList.Count == 0)
+			if (elementList.Count == 0)
 			{
 				LogMsg = $"Unable to Locate Element:\t{elementSelector} using strategy {locatorStrategy}.";
 				if (isRequired)
@@ -616,37 +624,37 @@ namespace CoreToolSet
 			else
 			{
 				string ListOfElements = "\n";
-				foreach (var element in ElementList)
+				foreach (var element in elementList)
 				{
 					ListOfElements += $"|{element.ToString()}|\n";
 				}
-				LogMsg = $"Elements Found:\t{ElementList.Count.ToString()}\n\t{ListOfElements}";
+				LogMsg = $"Elements Found:\t{elementList.Count.ToString()}\n\t{ListOfElements}";
 				logger.Write(LogMsg, funcName, LogConstants.LOG_DEBUG);
 			}
 
 		}
 
+        #endregion
 
+        //  ---------------------------------------------------------------
+        //  Element Interactions (FE)
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
 
-		//  ---------------------------------------------------------------
-		//  Element Interactions (FE)
-		//  ---------------------------------------------------------------
-		//  ---------------------------------------------------------------
+        #region Element Interactions
 
-
-
-		/// <summary>
-		/// Clicks on the Element
-		/// <para>hasHumanWait = whether to simulate human hesitancy after a click (default: true)</para>
-		/// </summary>
-		/// <param name="hasHumanWait"></param>
-		public void Click(bool hasHumanWait = true)
+        /// <summary>
+        /// Clicks on the Element
+        /// <para>hasHumanWait = whether to simulate human hesitancy after a click (default: true)</para>
+        /// </summary>
+        /// <param name="hasHumanWait"></param>
+        public void Click(bool hasHumanWait = true)
 		{
 			string funcName = "Click";
 			try
 			{
 				logger.Write("Clicking on Element.", funcName, LogConstants.LOG_DEBUG);
-				Element.Click();
+				element.Click();
 			}
 			catch (Exception e)
 			{
@@ -680,21 +688,21 @@ namespace CoreToolSet
 				{
 					case "innertext":
 					case "text":
-						outValue = Element.GetAttribute("innerText");
+						outValue = element.GetAttribute("innerText");
 						break;
 					case "innerhtml":
 					case "html":
-						outValue = Element.GetAttribute("innerHTML");
+						outValue = element.GetAttribute("innerHTML");
 						break;
 
 					default:
-						outValue = Element.GetAttribute(attribute2Get);
+						outValue = element.GetAttribute(attribute2Get);
 						break;
 				}
 			}
 			catch (Exception e)
 			{
-				LogMsg = $"ERROR:\tThe attribute provided [{attribute2Get}] does not match a valid type for element [{Element}]. \n{e}";
+				LogMsg = $"ERROR:\tThe attribute provided [{attribute2Get}] does not match a valid type for element [{element}]. \n{e}";
 				logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
 				throw new Exception(LogMsg);
 			}
@@ -717,11 +725,11 @@ namespace CoreToolSet
 
 			try
 			{
-				outValue = Element.GetProperty(property2Get);
+				outValue = element.GetProperty(property2Get);
 			}
 			catch (Exception e)
 			{
-				LogMsg = $"ERROR:\tThe attribute provided [{property2Get}] does not match a valid type for element [{Element}] . \n{e}";
+				LogMsg = $"ERROR:\tThe attribute provided [{property2Get}] does not match a valid type for element [{element}] . \n{e}";
 				logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
 				throw new Exception(LogMsg);
 			}
@@ -751,11 +759,11 @@ namespace CoreToolSet
 
 			try
 			{
-				Element.SendKeys(sendValue);
+				element.SendKeys(sendValue);
 			}
 			catch (Exception e)
 			{
-				LogMsg = $"Unable to Send text [{sendValue}] to Element [{Element}]\n{e}";
+				LogMsg = $"Unable to Send text [{sendValue}] to Element [{element}]\n{e}";
 				logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
 				throw new Exception(LogMsg);
 			}
@@ -778,7 +786,7 @@ namespace CoreToolSet
 
 				logger.Write($"JavaScript to Run:\n{jScript}", funcName, LogConstants.LOG_DEBUG);
 
-				var testItem = ((IJavaScriptExecutor)Driver).ExecuteScript(jScript);
+				var testItem = ((IJavaScriptExecutor)driver).ExecuteScript(jScript);
 			}
 			catch (Exception e)
 			{
@@ -801,26 +809,26 @@ namespace CoreToolSet
 //			throw new Exception("Not Yet Implemented");
 			string funcName = "LocateByJS";
 			string jsOutString = "";
-			switch (LocatorStrategy.ToLower())
+			switch (locatorStrategy.ToLower())
 			{
 				case ("xpath"):
-					jsOutString = $"document.evaluate(\"{ElementSelector}\", document,null, XPathResult.ANY_TYPE,null).FIRST_ORDERED_NODE_TYPE";
+					jsOutString = $"document.evaluate(\"{elementSelector}\", document,null, XPathResult.ANY_TYPE,null).FIRST_ORDERED_NODE_TYPE";
 					break;
 				case ("css"):
 				case ("cssselector"):
-					jsOutString = $"document.querySelector(\"{ElementSelector}\");";
+					jsOutString = $"document.querySelector(\"{elementSelector}\");";
 					break;
 				case ("id"):
-					jsOutString = $"document.getElementById(\"{ElementSelector}\");";
+					jsOutString = $"document.getElementById(\"{elementSelector}\");";
 					break;
 				case ("name"):
-					jsOutString = $"document.getElementsByName(\"{ElementSelector}\");";
+					jsOutString = $"document.getElementsByName(\"{elementSelector}\");";
 					break;
 				case ("classname"):
-					jsOutString = $"document.getElementsByClassName(\"{ElementSelector}\");";
+					jsOutString = $"document.getElementsByClassName(\"{elementSelector}\");";
 					break;
 				case ("tagname"):
-					jsOutString = $"document.getElementsByTagName(\"{ElementSelector}\");";
+					jsOutString = $"document.getElementsByTagName(\"{elementSelector}\");";
 					break;
 
 				default:
@@ -832,13 +840,109 @@ namespace CoreToolSet
 
 			if (jsOutString == "")
 			{
-				LogMsg = $"Location Strategy [{LocatorStrategy}] not supported.";
+				LogMsg = $"Location Strategy [{locatorStrategy}] not supported.";
 				logger.Write(LogMsg, funcName, LogConstants.LOG_ERROR);
 				throw new Exception(LogMsg);
 			}
 
 			return jsOutString;
 		}
+
+		#endregion
+
+
+
+
+		//  ---------------------------------------------------------------
+		//  JavaScript Functions
+		//  ---------------------------------------------------------------
+		//  ---------------------------------------------------------------
+
+		#region JavaScript
+
+		public void RunJS(string javascriptCode)
+		{
+
+			string funcName = MethodBase.GetCurrentMethod().Name;
+			try
+			{
+				((IJavaScriptExecutor)driver).ExecuteScript($"{javascriptCode}");
+			}
+			catch (Exception e)
+			{
+				logger.Write(e.Message, funcName);
+
+			}
+		}
+
+		public string RunJsStringOut(string javascriptCode)
+		{
+
+			string funcName = MethodBase.GetCurrentMethod().Name;
+			try
+			{
+				return (string)((IJavaScriptExecutor)driver).ExecuteScript($"{javascriptCode}");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+				Thread.Sleep(5000);
+				throw new Exception(e.Message);
+
+			}
+		}
+
+		/// <summary>
+		/// Uses JavaScript to find and click on an element <br />
+		/// Should click elements that normal Selenium Click does not <br />
+		/// Does not always return errors when click fails (JS limitation)
+		/// </summary>
+		/// <param name="xpath">Xpath to the element</param>
+		public void ClickJS(string xpath)
+		{
+			string funcName = MethodBase.GetCurrentMethod().Name;
+			string jScript = "";
+
+			jScript += "function clickJS(xpath) \n";
+			jScript += "{  \n";
+			jScript += "	try \n";
+			jScript += "	{ \n";
+			jScript += "		let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE).singleNodeValue; \n";
+			jScript += "		element.click(); \n";
+			jScript += "	} \n";
+			jScript += "	catch (e) \n";
+			jScript += "	{ \n";
+			jScript += "		return e; \n";
+			jScript += "	} \n";
+			jScript += "	return 'SUCCESS'; \n";
+			jScript += "} \n";
+			jScript += $"return clickJS(`{xpath}`);";
+
+			string returnValue = "";
+			try
+			{
+
+				returnValue = ((IJavaScriptExecutor)driver).ExecuteScript($"{jScript}").ToString();
+				if (returnValue == "SUCCESS")
+				{
+					logger.Write($"{returnValue} Click on [{xpath}]", funcName);
+				}
+				else
+				{
+					logger.Write($"Failed to click on [{xpath}]\n\t{returnValue}", funcName);
+				}
+
+			}
+			catch (Exception e)
+			{
+				logger.Write(e.Message, funcName);
+			}
+
+
+		}
+
+
+		#endregion
 
 
 
@@ -848,7 +952,7 @@ namespace CoreToolSet
 		//  ---------------------------------------------------------------
 		//  ---------------------------------------------------------------
 
-
+		#region Table Interactions
 		public void Table2List(int headerRow = 1,bool textOnly = true)
 		{
 			string funcName = "Table2List";
@@ -870,7 +974,7 @@ namespace CoreToolSet
 
 				// Get <TR> tags
 				tableRowsElements.Clear();
-				foreach (var iElement in Element.FindElements(tableRowsSelector))
+				foreach (var iElement in element.FindElements(tableRowsSelector))
 				{
 					tableRowsElements.Add(iElement);
 				}
@@ -942,6 +1046,251 @@ namespace CoreToolSet
 				throw new Exception(LogMsg);
 			}
 		}
+
+		#endregion
+
+
+
+
+		//  ---------------------------------------------------------------
+		//  JQX Element Functions
+		//  ---------------------------------------------------------------
+		//  ---------------------------------------------------------------
+
+		#region Jqx Element Functions
+
+
+		public void GetJqxGridColumn(string gridId, int columnNum = 1)
+		{
+			string elementXpath = $"//div[@id='{gridId}']//div[@role='row']/div[@columnindex={columnNum.ToString()}]/div";
+
+			FindElements(elementXpath);
+
+		}
+
+		/// <summary>
+		/// Reads a jqxGird then converts the data into a Dictionary.
+		/// </summary>
+		/// <param name="gridId">The Element ID for the jqxGrid</param>
+		/// <param name="debug">Determines whether Javascript will be sent to SQL</param>
+		/// <returns>JSON from the Grid as Dictionary (int,dynamic)</returns>
+		public Dictionary<int, dynamic> JqxGridData(string gridId, bool debug = false)
+		{
+
+			string funcName = MethodBase.GetCurrentMethod().Name;
+			Dictionary<int, dynamic> output = new Dictionary<int, dynamic>();
+			logger.Write($"Getting Grid Data for {gridId}", funcName);
+			Console.WriteLine($"Getting Grid Data for {gridId}");
+			string jscript = "";
+
+			// Javascript to be run 
+			jscript = "function getJqxTableData(gridId)	\n	{	\n";
+			jscript += "	let xpath = `//div[@id='${gridId}']//div[@role='columnheader']//span`;	\n";
+			jscript += "	let allHeaders = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);	\n";
+			jscript += "	let columnCount = allHeaders.snapshotLength;	\n	";
+			jscript += "	xpath = `//div[@id='${gridId}']//div[@role='columnheader'][not(contains(@style,'display'))]//span` \n ";
+			jscript += "	let visibleHeaders = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);	\n	";
+			jscript += "	let visibleHeaderItem = 0;	\n ";
+			jscript += "	let tableHeaders = [];	\n ";
+			jscript += "	for (i = 0; i < columnCount; i++)	\n	";
+			jscript += "	{	\n	";
+			jscript += "		let currentHeader = allHeaders.snapshotItem(i);	\n	";
+			jscript += "		let currentVisible = visibleHeaders.snapshotItem(visibleHeaderItem);	\n ";
+			jscript += "		if (currentHeader == currentVisible)	\n ";
+			jscript += "		{	\n	";
+			jscript += "			tableHeaders.push({ colTitle: currentVisible.innerText, colNum: i });	\n	";
+			jscript += "			visibleHeaderItem++;	\n	";
+			jscript += "		}	\n	";
+			jscript += "	}	\n	";
+			jscript += "	xpath = `//div[@id='${gridId}']//div[@role='row']/div/div`;	\n	";
+			jscript += "	tableRaw = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);	\n	";
+			jscript += "	let rowCount = tableRaw.snapshotLength;	\n	";
+			jscript += "	let resultsJson = new Object();	\n	";
+			jscript += "	for (i = 0; i < rowCount; i++)	\n	";
+			jscript += "	{	\n	";
+			jscript += "	let rowJson = new Object();	\n  ";
+
+			jscript += "        for (i2 = 0; i2 < tableHeaders.length; i2++) {	\n	";
+			jscript += "            let curColumn = tableHeaders[i2]['colNum'];	\n	";
+			jscript += "            let colTitle = tableHeaders[i2]['colTitle'];	\n	";
+			jscript += "            xpath = `//div[@id='${gridId}']//div[@id='row${i}${gridId}']/div[@columnindex=${curColumn}]/div`;	\n	";
+			jscript += "            let curElement = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE).singleNodeValue;	\n	";
+			jscript += "            try {	\n	";
+			jscript += "                if (!curElement.innerText) {	\n	";
+			jscript += "                    break;	\n	";
+			jscript += "                }	\n	";
+			jscript += "                rowJson[colTitle] = curElement.innerText;	\n	";
+			jscript += "            }	\n	";
+			jscript += "            catch (e) {	\n	";
+			jscript += "                break;	\n	";
+			jscript += "            }	\n	";
+			jscript += "            if (rowJson[tableHeaders[0]['colTitle']]) {	\n	";
+			jscript += "                resultsJson[i] = rowJson;	\n	";
+			jscript += "            }	\n	";
+			jscript += "        }	\n	";
+			jscript += "    }	\n	";
+			jscript += "    return resultsJson;	\n	";
+			jscript += "}	\n	";
+
+			jscript += $"return JSON.stringify(getJqxTableData('{gridId}'));";
+
+			if (debug)
+			{
+				logger.Write($"Javascript\n\n{jscript}", funcName);
+			}
+
+			try
+			{
+				string resultsJson = ((IJavaScriptExecutor)driver).ExecuteScript($"{jscript}").ToString();
+				output = JsonConvert.DeserializeObject<Dictionary<int, dynamic>>(resultsJson);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+				throw new Exception($"Func: {funcName}({gridId}) || An error occurred while extracting data from a jqxGrid.\n{e.Message}");
+			}
+
+
+			return output;
+
+		}
+
+
+		/// <summary>
+		/// Reads a jqxDropdown then converts the data into a String
+		/// </summary>
+		/// <param name="comboBoxId">The Element ID for the jqx Drop Down</param>
+		/// <param name="debug">Determines wehther Javascript will be sent to SQL</param>
+		/// <returns>JSON from the Grid as String </returns>
+		public string JqxComboBoxData(string comboBoxId, bool debug = false)
+		{
+
+			string funcName = MethodBase.GetCurrentMethod().Name;
+			string output = "";
+			string jScript = "";
+
+			jScript += "function getJqxDropDownData(ddmsId)	\n";
+			jScript += "{ \n ";
+			jScript += "	let xpath = `//select[@id='${ddmsId}']/option[@selected]`; \n ";
+			jScript += "	let returnValue = []; \n ";
+			jScript += "	let elements = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE); \n ";
+			jScript += "	for (i = 0; i < elements.snapshotLength; i++) \n ";
+			jScript += "	{ \n ";
+			jScript += "		returnValue.push(elements.snapshotItem(i).innerText); \n ";
+			jScript += "	} \n ";
+			jScript += "	return returnValue.toString(); \n ";
+			jScript += "} \n ";
+
+			jScript += $"return JSON.stringify( getJqxDropDownData('{comboBoxId}') )";
+
+			if (debug)
+			{
+				logger.Write($"Javascript\n\n{jScript}", funcName);
+			}
+
+			try
+			{
+				output = ((IJavaScriptExecutor)driver).ExecuteScript($"{jScript}").ToString();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+				throw new Exception($"Func: {funcName}({comboBoxId}) || An error occurred while extracting data from a jqxGrid.\n{e.Message}");
+			}
+
+			return output;
+
+		}
+
+		/// <summary>
+		/// Clicks the Option from a JQX Dropdown (Multi-Selcr or Single)
+		/// </summary>
+		/// <param name="comboBoxId">The Element ID for the Select Element</param>
+		/// <param name="options">A Comma Separated list of values to select from the Drop Down</param>
+		public void ClickJqxComboBoxOptions(string comboBoxId, string options)
+		{
+
+			string funcName = MethodBase.GetCurrentMethod().Name;
+
+			try
+			{
+				string selectXpath = $"//select[@id='{comboBoxId}']";
+				selectXpath = $"//select[@id='{comboBoxId}']/following-sibling::button";
+
+				this.FindElement(selectXpath);
+				//				this.ClickJS(selectXpath);
+				this.Click();
+
+				Thread.Sleep(250);
+				var optionValues = options
+										.Trim()
+										.Replace("  ", " ")
+										.Split(new string[] { "," }, StringSplitOptions.None);
+
+				foreach (var opt in optionValues)
+				{
+					string optionXpath = $"//select[@id='{comboBoxId}']//option[contains(text(),'{opt}')]";
+					optionXpath = $"//li[@class='optLookup']//input[contains(@name,'multiselect')][contains(@name,'{comboBoxId}')]/following-sibling::span[contains(text(),'{opt}')]";
+
+
+					this.FindElement(optionXpath);
+					//					this.ClickJS(optionXpath);
+					this.Click();
+					Thread.Sleep(250);
+				}
+			}
+			catch (Exception e)
+			{
+				logger.Write(e.Message, funcName);
+			}
+		}
+
+
+		#endregion
+
+
+
+
+
+		//  ---------------------------------------------------------------
+		//  General Functions
+		//  ---------------------------------------------------------------
+		//  ---------------------------------------------------------------
+		#region General Functions
+
+		/// <summary>
+		/// Returns the time differences in seconds
+		/// </summary>
+		/// <param name="startTime">The Start Time</param>
+		/// <param name="endTime">The End Time</param>
+		/// <returns>endTime - startTime as INT (seconds)</returns>
+		public int TimeDiffInt(DateTime startTime, DateTime endTime)
+		{
+
+				int result = endTime.Subtract(startTime).Seconds + endTime.Subtract(startTime).Minutes * 60 + endTime.Subtract(startTime).Hours * 3600 + endTime.Subtract(startTime).Hours * 3600 * 24;
+				return result;
+
+		}
+
+		
+		/// <summary>
+		/// Returns the time difference as TimeSpan
+		/// </summary>
+		/// <param name="startTime">The Start Time</param>
+		/// <param name="endTime">The End Time</param>
+		/// <returns>endTime - startTime as TimeSpan</returns>
+		public TimeSpan TimeDiffTimeSpan(DateTime startTime, DateTime endTime)
+		{
+			TimeSpan result;
+
+			result = endTime.Subtract(startTime);
+
+			return result;
+		}
+
+		
+		#endregion
+
 
 
 	}
